@@ -1,0 +1,76 @@
+﻿
+@{
+    //ViewBag.Title = "UploadFile";
+    Layout = "~/Views/Shared/_Base.cshtml";
+}
+
+
+@section inner{
+    <!-- inner banner -->
+    <section class="inner-banner py-5">
+        <div class="w3l-breadcrumb py-lg-5">
+            <div class="container pt-4 pb-sm-4">
+                <h4 class="inner-text-title font-weight-bold pt-sm-5 pt-4">@ViewBag.Title</h4>
+                <ul class="breadcrumbs-custom-path">
+                    <li><a href="/TrangChu/">Trang chủ</a></li>
+                    <li class="active"><i class="fas fa-angle-right mx-2"></i>@ViewBag.Title</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    <!-- //inner banner -->
+}
+
+@section mains{
+    <section class="home-services py-5" id="services">
+        <div class="container py-lg-5 py-md-4 py-2">
+            <form method="post" action="" enctype="multipart/form-data">
+                <div>
+                    <input type="file" id="file_upload" name="my_file" />
+                    <input type="button" id="bton_upload" value="Upload" />
+                </div>
+                <div>
+                    <progress id="prog_upload" style="display: none"></progress>
+                    <span id="mess_upload" style="color: Green"></span>
+                </div>
+            </form>
+        </div>
+    </section>
+}
+
+@section my_script{
+    <script type="text/javascript">
+        $("body").on("click", "#bton_upload", function () {
+            var formData = new FormData();
+            formData.append("file", $("#file_upload")[0].files[0]);
+            $.ajax({
+                url: '/api/Upload/UploadFile',
+                type: 'POST',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    console.log(response);
+                    //$("#prog_upload").hide();
+                    $("#mess_upload").html("</br>Tập tin <b>" + response + "</b> đã được tải lên.");
+                },
+                xhr: function () {
+                    var fileXhr = $.ajaxSettings.xhr();
+                    if (fileXhr.upload) {
+                        $("progress").show();
+                        fileXhr.upload.addEventListener("progress", function (e) {
+                            if (e.lengthComputable) {
+                                $("#prog_upload").attr({
+                                    value: e.loaded,
+                                    max: e.total
+                                });
+                            }
+                        }, false);
+                    }
+                    return fileXhr;
+                }
+            });
+        });
+    </script>
+}
